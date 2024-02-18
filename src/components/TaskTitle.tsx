@@ -2,7 +2,7 @@ import { PropsWithChildren } from "react";
 
 export default function TaskTitle(props: PropsWithChildren) {
   return (
-    <h4 className="font-bold text-ellipsis overflow-hidden text-nowrap">
+    <h4 className="font-bold">
       {
         props.children
           ? props.children

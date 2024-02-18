@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react";
 export default function TaskListTitle(props: PropsWithChildren) {
   return (
     <div className="p-component rounded-lg bg-component hover-darken">
-      <h2 className="font-bold text-ellipsis overflow-hidden text-nowrap">
+      <h2 className="font-bold">
         {
           props.children
             ? props.children
