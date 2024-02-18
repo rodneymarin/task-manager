@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-component{
+  @apply bg-stone-100;
+}
+
+.px-component{
+  @apply px-3;
+}
+
+.py-component{
+  @apply py-3;
+}
+
+.p-component{
+  @apply p-3;
+}
+
+.hover-darken {
+  @apply hover:brightness-90 cursor-pointer;
+}
