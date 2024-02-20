@@ -6,22 +6,11 @@ import Column from "./components/Column"
 import ColumnTitle from "./components/ColumnTitle"
 import TaskTitle from "./components/TaskTitle"
 import { FaPlus } from "react-icons/fa6"
-import DropDivider from "./components/DropDivider"
-import { DragEvent, useRef, useState } from "react"
-import ButtonAddTask from "./components/ButtonAddTask"
+import { useState } from "react"
 import Droppable from "./components/Droppable"
+import FormNewTask from "./components/FormNewTask"
+import { ColumnData, TaskData } from "./globals"
 
-interface TaskData {
-  id: string;
-  title: string;
-  content: string;
-  idColumn: string;
-}
-
-interface ColumnData {
-  id: string;
-  title: string;
-}
 
 const DEFAULT_COLUMNS: ColumnData[] = [
   { id: "asda090s9d", title: "Idea" },
@@ -45,6 +34,8 @@ function App() {
   const [columns, setColumns] = useState<ColumnData[]>(DEFAULT_COLUMNS);
   const [tasks, setTasks] = useState<TaskData[]>(DEFAULT_TASKS);
   const [draggingTask, setDraggingTask] = useState<TaskData | null>(null);
+  // const [isVisibleDialogAddTask, setIsVisibleDialogAddTask] = useState<boolean>(false);
+  const [isVisibleDialogAddTask, setIsVisibleDialogAddTask] = useState<{ isVisible: boolean, column: ColumnData } | null>(null);
 
   function handleDragStart(task: TaskData) {
     setDraggingTask(task);
@@ -100,15 +91,31 @@ function App() {
                     })
                   }
                   <Droppable id={columnItem.id} isDraggable={false} onDrop={() => handleDropButton(columnItem)}>
-                    <button className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component hover-darken"><FaPlus />Add task</button>
+                    <button onClick={() => setIsVisibleDialogAddTask({ isVisible: true, column: columnItem })} className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add task</button>
                   </Droppable>
                 </Column>
               )
             })
           }
-          <button className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component hover-darken"><FaPlus />Add column</button>
+          <button className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add column</button>
         </Board>
-      </main>
+        <FormNewTask
+          column={isVisibleDialogAddTask?.column as ColumnData}
+          isVisible={isVisibleDialogAddTask?.isVisible as boolean}
+          onCancel={() =>
+            setIsVisibleDialogAddTask(
+              {
+                isVisible: false,
+                column: isVisibleDialogAddTask?.column as ColumnData
+              })}
+          onSave={() =>
+            setIsVisibleDialogAddTask(
+              {
+                isVisible: false, column: isVisibleDialogAddTask?.column as ColumnData
+              })}
+        />
+      </main >
+
     </>
   )
 }

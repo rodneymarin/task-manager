@@ -18,6 +18,6 @@
   @apply p-3;
 }
 
-.hover-darken {
+.hover-darken-button {
   @apply hover:brightness-90 cursor-pointer;
 }
