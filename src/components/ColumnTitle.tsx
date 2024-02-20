@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-export default function TaskListTitle(props: PropsWithChildren) {
+export default function ColumnTitle(props: PropsWithChildren) {
   return (
     <div className="p-component rounded-lg bg-component hover-darken">
       <h2 className="font-bold">
