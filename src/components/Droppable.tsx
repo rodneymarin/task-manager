@@ -5,7 +5,7 @@ interface DroppableProps {
   id: string;
   isDraggable: boolean;
   onDrop?: () => void;
-  onDragStart?: () => void;
+  onClick?: () => void;
 }
 
 export default function Droppable(props: PropsWithChildren<DroppableProps>) {
@@ -25,13 +25,23 @@ export default function Droppable(props: PropsWithChildren<DroppableProps>) {
     props.onDrop && props.onDrop();
   }
 
-  function handleDragStart(e: DragEvent) {
-    e.dataTransfer.setData("Text", props.id);
-    props.onDragStart && props.onDragStart();
+  function handleMouseDown() {
+    props.onClick && props.onClick();
   }
 
+  // function handleDragStart(e: DragEvent) {
+
+  //   props.onDragStart && props.onDragStart();
+  // }
+
   return (
-    <div draggable={props.isDraggable} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+    <div
+      draggable={props.isDraggable}
+
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onMouseDown={handleMouseDown}>
       <DropDivider isActive={isActive} />
       {props.children}
     </div>

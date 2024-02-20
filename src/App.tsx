@@ -8,8 +8,9 @@ import TaskTitle from "./components/TaskTitle"
 import { FaPlus } from "react-icons/fa6"
 import { useState } from "react"
 import Droppable from "./components/Droppable"
-import FormNewTask from "./components/FormNewTask"
+import FormEditTask from "./components/FormEditTask"
 import { ColumnData, TaskData } from "./globals"
+import { getRandomId } from "./lib/getRandomId"
 
 
 const DEFAULT_COLUMNS: ColumnData[] = [
@@ -33,38 +34,65 @@ const DEFAULT_TASKS: TaskData[] = [
 function App() {
   const [columns, setColumns] = useState<ColumnData[]>(DEFAULT_COLUMNS);
   const [tasks, setTasks] = useState<TaskData[]>(DEFAULT_TASKS);
-  const [draggingTask, setDraggingTask] = useState<TaskData | null>(null);
-  // const [isVisibleDialogAddTask, setIsVisibleDialogAddTask] = useState<boolean>(false);
-  const [isVisibleDialogAddTask, setIsVisibleDialogAddTask] = useState<{ isVisible: boolean, column: ColumnData } | null>(null);
+  //const [draggingTask, setDraggingTask] = useState<TaskData | null>(null);
+  const [selectedTask, setSelectedTask] = useState<TaskData | null>(null);
+  const [selectedColumn, setSelectedColumn] = useState<ColumnData | null>(null);
+  const [isVisibleDialogEditTask, setIsVisibleDialogEditTask] = useState<boolean>(false);
 
-  function handleDragStart(task: TaskData) {
-    setDraggingTask(task);
+  function handleClickTask(task: TaskData) {
+    setSelectedTask(task);
+  }
+
+  function handleClickAddTask(column: ColumnData) {
+    setSelectedColumn(column);
   }
 
   function handleDrop(destinationTask: TaskData) {
-    if (draggingTask?.id === destinationTask.id) return;
+    if (selectedTask?.id === destinationTask.id) return;
     //task list without beeing dragged
-    const tasksWithoutDraggin = tasks.filter(item => item.id !== draggingTask?.id);
+    const tasksWithoutDraggin = tasks.filter(item => item.id !== selectedTask?.id);
     const insertIndex = tasksWithoutDraggin.indexOf(destinationTask);
     //join the full array in two slices inserting the dragged task inbetween
     const newTastks = [
       ...tasksWithoutDraggin.slice(0, insertIndex),
-      { ...draggingTask, idColumn: destinationTask.idColumn },
+      { ...selectedTask, idColumn: destinationTask.idColumn },
       ...tasksWithoutDraggin.slice(insertIndex)];
     setTasks(newTastks as TaskData[]);
   }
 
+  function getLastInsertIndexInColumn(tasks: TaskData[], column: ColumnData) {
+    const tasksInColumn = tasks.filter(item => item.idColumn === column.id);
+    const lastItemInColumn = tasksInColumn[tasksInColumn.length - 1];
+    return tasks.indexOf(lastItemInColumn) + 1;
+  }
+
   function handleDropButton(destinationColumn: ColumnData) {
     //task list without beeing dragged
-    const tasksWithoutDraggin = tasks.filter(item => item.id !== draggingTask?.id);
-    const tasksInColumn = tasksWithoutDraggin.filter(item => item.idColumn === destinationColumn.id);
-    const lastItemInColumn = tasksInColumn[tasksInColumn.length - 1];
-    const insertIndex = tasksWithoutDraggin.indexOf(lastItemInColumn) + 1;
-    console.log(insertIndex);
+    const tasksWithoutDraggin = tasks.filter(item => item.id !== selectedTask?.id);
+    // const tasksInColumn = tasksWithoutDraggin.filter(item => item.idColumn === destinationColumn.id);
+    // const lastItemInColumn = tasksInColumn[tasksInColumn.length - 1];
+    // const insertIndex = tasksWithoutDraggin.indexOf(lastItemInColumn) + 1;
+    const insertIndex = getLastInsertIndexInColumn(tasksWithoutDraggin, destinationColumn);
     const newTastks = [
       ...tasksWithoutDraggin.slice(0, insertIndex),
-      { ...draggingTask, idColumn: destinationColumn.id },
+      { ...selectedTask, idColumn: destinationColumn.id },
       ...tasksWithoutDraggin.slice(insertIndex)];
+    setTasks(newTastks as TaskData[]);
+  }
+
+  function handleSaveNewTask(title: string, content: string) {
+    setIsVisibleDialogEditTask(false);
+    const newTask: TaskData = {
+      id: getRandomId(),
+      title: title,
+      content: content,
+      idColumn: selectedColumn?.id as string
+    }
+    const insertIndex = getLastInsertIndexInColumn(tasks, selectedColumn as ColumnData);
+    const newTastks = [
+      ...tasks.slice(0, insertIndex),
+      newTask,
+      ...tasks.slice(insertIndex)];
     setTasks(newTastks as TaskData[]);
   }
 
@@ -81,7 +109,7 @@ function App() {
                   {
                     tasks.filter(taskIt => taskIt.idColumn == columnItem.id).map(taskItem => {
                       return (
-                        <Droppable id={taskItem.id} isDraggable={true} onDragStart={() => handleDragStart(taskItem)} onDrop={() => handleDrop(taskItem)}>
+                        <Droppable id={taskItem.id} isDraggable={true} onClick={() => handleClickTask(taskItem)} onDrop={() => handleDrop(taskItem)}>
                           <Task key={taskItem.id}>
                             <TaskTitle>{taskItem.title}</TaskTitle>
                             <TaskContent >{taskItem.content}</TaskContent>
@@ -90,8 +118,12 @@ function App() {
                       )
                     })
                   }
-                  <Droppable id={columnItem.id} isDraggable={false} onDrop={() => handleDropButton(columnItem)}>
-                    <button onClick={() => setIsVisibleDialogAddTask({ isVisible: true, column: columnItem })} className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add task</button>
+                  <Droppable
+                    id={columnItem.id}
+                    isDraggable={false}
+                    onDrop={() => handleDropButton(columnItem)}
+                    onClick={() => handleClickAddTask(columnItem)}>
+                    <button onClick={() => setIsVisibleDialogEditTask(true)} className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add task</button>
                   </Droppable>
                 </Column>
               )
@@ -99,20 +131,13 @@ function App() {
           }
           <button className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add column</button>
         </Board>
-        <FormNewTask
-          column={isVisibleDialogAddTask?.column as ColumnData}
-          isVisible={isVisibleDialogAddTask?.isVisible as boolean}
-          onCancel={() =>
-            setIsVisibleDialogAddTask(
-              {
-                isVisible: false,
-                column: isVisibleDialogAddTask?.column as ColumnData
-              })}
-          onSave={() =>
-            setIsVisibleDialogAddTask(
-              {
-                isVisible: false, column: isVisibleDialogAddTask?.column as ColumnData
-              })}
+        <FormEditTask
+          isNew={true}
+          selectedColumn={selectedColumn}
+          selectedTask={selectedTask}
+          isVisible={isVisibleDialogEditTask}
+          onCancel={() => setIsVisibleDialogEditTask(false)}
+          onSave={handleSaveNewTask}
         />
       </main >
 
