@@ -2,6 +2,7 @@ import { DragEvent, PropsWithChildren, useState } from 'react'
 import DropDivider from "./DropDivider"
 
 interface DroppableProps {
+  id: string;
   isDraggable: boolean;
   onDrop?: () => void;
   onDragStart?: () => void;
@@ -24,7 +25,8 @@ export default function Droppable(props: PropsWithChildren<DroppableProps>) {
     props.onDrop && props.onDrop();
   }
 
-  function handleDragStart() {
+  function handleDragStart(e: DragEvent) {
+    e.dataTransfer.setData("Text", props.id);
     props.onDragStart && props.onDragStart();
   }
 

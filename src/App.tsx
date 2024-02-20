@@ -85,26 +85,28 @@ function App() {
           {
             columns.map(columnItem => {
               return (
-                <Column key={columnItem.id} id={columnItem.id} title={columnItem.title}>
-
+                <Column key={columnItem.id}>
+                  <ColumnTitle >{columnItem.title}</ColumnTitle>
                   {
                     tasks.filter(taskIt => taskIt.idColumn == columnItem.id).map(taskItem => {
                       return (
-                        <Droppable isDraggable={true} onDragStart={() => handleDragStart(taskItem)} onDrop={() => handleDrop(taskItem)}>
-                          <Task key={taskItem.id} title={taskItem.title} content={taskItem.content} />
+                        <Droppable id={taskItem.id} isDraggable={true} onDragStart={() => handleDragStart(taskItem)} onDrop={() => handleDrop(taskItem)}>
+                          <Task key={taskItem.id}>
+                            <TaskTitle>{taskItem.title}</TaskTitle>
+                            <TaskContent >{taskItem.content}</TaskContent>
+                          </Task>
                         </Droppable>
                       )
                     })
                   }
-                  <Droppable isDraggable={false} onDrop={() => handleDropButton(columnItem)}>
+                  <Droppable id={columnItem.id} isDraggable={false} onDrop={() => handleDropButton(columnItem)}>
                     <button className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component hover-darken"><FaPlus />Add task</button>
                   </Droppable>
                 </Column>
               )
             })
-
-
           }
+          <button className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component hover-darken"><FaPlus />Add column</button>
         </Board>
       </main>
     </>
