@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-export default function TaskContent(props: PropsWithChildren) {
+export default function CardContent(props: PropsWithChildren) {
   return (
     <div className="pt-2 overflow-hidden">
       <div className="overflow-hidden line-clamp-4">

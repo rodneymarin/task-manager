@@ -4,7 +4,8 @@ import DropDivider from "./DropDivider"
 interface DroppableProps {
   id: string;
   isDraggable: boolean;
-  onDrop?: () => void;
+  onDrop: () => void;
+  onMouseDown?: () => void;
   onClick?: () => void;
 }
 
@@ -26,18 +27,14 @@ export default function Droppable(props: PropsWithChildren<DroppableProps>) {
   }
 
   function handleMouseDown() {
-    props.onClick && props.onClick();
+    props.onMouseDown && props.onMouseDown();
   }
 
-  // function handleDragStart(e: DragEvent) {
-
-  //   props.onDragStart && props.onDragStart();
-  // }
 
   return (
     <div
       draggable={props.isDraggable}
-
+      onClick={props.onClick}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

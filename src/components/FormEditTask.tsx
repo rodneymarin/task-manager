@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import Modal from "./Modal";
 import { ColumnData, TaskData } from "../globals";
 
@@ -12,8 +12,40 @@ interface PropsFormEditTask {
 }
 
 export default function FormEditTask(props: PropsFormEditTask) {
-  const [taskTitle, setTaskTitle] = useState<string>(props.isNew ? "" : props.selectedTask.title);
-  const [taskContent, setTaskContent] = useState<string>(props.isNew ? "" : props.selectedTask.content);
+  const [taskTitle, setTaskTitle] = useState<string>("");
+  const [taskContent, setTaskContent] = useState<string>("");
+  const inputTitleRef = useRef<HTMLTextAreaElement>(null);
+  const [error, setError] = useState<boolean>(false);
+
+  //focus title input
+  useEffect(() => {
+    if (props.isNew) {
+      setTaskTitle("");
+      setTaskContent("");
+    } else {
+      setTaskTitle(props.selectedTask ? props.selectedTask.title : "");
+      setTaskContent(props.selectedTask ? props.selectedTask.content : "");
+    }
+  }, [props.isNew, props.selectedTask])
+
+  useEffect(() => {
+    const err: boolean = (taskTitle === "" && taskContent === "");
+    setError(err);
+  }, [taskTitle, taskContent]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      inputTitleRef.current?.focus();
+    }, 100);
+  }, [props.isVisible])
+
+  function handleTitleChange(event: ChangeEvent<HTMLTextAreaElement>) {
+    setTaskTitle(event.target.value);
+  }
+
+  function handleContentChange(event: ChangeEvent<HTMLTextAreaElement>) {
+    setTaskContent(event.target.value);
+  }
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -22,22 +54,34 @@ export default function FormEditTask(props: PropsFormEditTask) {
 
   return (
     <Modal isVisible={props.isVisible}>
-      <form className="w-96 min-h-72 p-8 rounded-xl shadow-xl bg-stone-100 flex flex-col gap-8"
+      <form className="w-[30rem] min-h-72 p-8 rounded-xl shadow-xl bg-stone-100 flex flex-col gap-8 text-stone-500"
         onSubmit={handleSubmit}
       >
-        <h4 className="font-bold text-lg mb-2">{`${props.isNew ? "Add new " : "Edit "}task inside ${props.selectedColumn?.title} column`}</h4>
+        <div>
+          <h4 className="font-bold text-xl text-black">{`${props.isNew ? "Add new " : "Edit "}task`}</h4>
+          <p className="text-stone-400">Inside column <i>{props.selectedColumn?.title}</i></p>
+        </div>
         <div className="flex flex-col gap-1">
           <label className="block font-bold">Title</label>
-          <textarea className="border border-stone-300 rounded-md min-h-10 w-full p-2 resize-none" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
+          <textarea
+            ref={inputTitleRef}
+            autoFocus={true}
+            className="rounded-md min-h-10 w-full p-2 resize-none"
+            value={taskTitle}
+            onChange={handleTitleChange} />
         </div>
         <div className="flex flex-col gap-1">
           <label className="block font-bold">Content</label>
-          <textarea className="border border-stone-300 rounded-md min-h-40 w-full p-2 resize-none" value={taskContent} onChange={(e) => setTaskContent(e.target.value)} />
+          <textarea
+            className="rounded-md min-h-40 w-full p-2 resize-none"
+            value={taskContent}
+            onChange={handleContentChange} />
         </div>
         <div className="w-full flex gap-4">
           <button
             type="submit"
-            className="rounded-md bg-purple-600 text-white h-fit w-fit min-w-32 p-2 cursor-pointer hover:bg-purple-700">
+            disabled={error}
+            className="rounded-md bg-purple-600 text-white h-fit w-fit min-w-32 p-2 cursor-pointer hover:bg-purple-700 disabled:bg-stone-200 disabled:cursor-default">
             Save</button>
           <button
             onClick={props.onCancel}

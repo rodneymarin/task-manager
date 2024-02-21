@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-export default function TaskTitle(props: PropsWithChildren) {
+export default function CardTitle(props: PropsWithChildren) {
   return (
     <h4 className="font-bold">
       {

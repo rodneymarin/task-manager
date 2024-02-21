@@ -1,16 +1,18 @@
 import Board from "./components/Board"
 import Header from "./components/Header"
-import Task from "./components/Task"
-import TaskContent from "./components/TaskContent"
+import Card from "./components/Card"
+import CardContent from "./components/CardContent"
 import Column from "./components/Column"
 import ColumnTitle from "./components/ColumnTitle"
-import TaskTitle from "./components/TaskTitle"
+import CardTitle from "./components/CardTitle"
 import { FaPlus } from "react-icons/fa6"
 import { useState } from "react"
 import Droppable from "./components/Droppable"
 import FormEditTask from "./components/FormEditTask"
 import { ColumnData, TaskData } from "./globals"
 import { getRandomId } from "./lib/getRandomId"
+import { IoIosCloseCircleOutline } from "react-icons/io"
+import { CgCloseO } from "react-icons/cg"
 
 
 const DEFAULT_COLUMNS: ColumnData[] = [
@@ -34,13 +36,17 @@ const DEFAULT_TASKS: TaskData[] = [
 function App() {
   const [columns, setColumns] = useState<ColumnData[]>(DEFAULT_COLUMNS);
   const [tasks, setTasks] = useState<TaskData[]>(DEFAULT_TASKS);
-  //const [draggingTask, setDraggingTask] = useState<TaskData | null>(null);
   const [selectedTask, setSelectedTask] = useState<TaskData | null>(null);
   const [selectedColumn, setSelectedColumn] = useState<ColumnData | null>(null);
-  const [isVisibleDialogEditTask, setIsVisibleDialogEditTask] = useState<boolean>(false);
+  const [isVisibleDialogEditTask, setIsVisibleDialogEditTask] = useState<{ isVisible: boolean, isNew: boolean }>({ isVisible: false, isNew: false });
 
-  function handleClickTask(task: TaskData) {
+  function handleMouseDownCard(task: TaskData) {
     setSelectedTask(task);
+  }
+
+  function handleClickCard(column: ColumnData) {
+    setSelectedColumn(column);
+    setIsVisibleDialogEditTask({ isVisible: true, isNew: false });
   }
 
   function handleClickAddTask(column: ColumnData) {
@@ -80,8 +86,29 @@ function App() {
     setTasks(newTastks as TaskData[]);
   }
 
-  function handleSaveNewTask(title: string, content: string) {
-    setIsVisibleDialogEditTask(false);
+  function handleSaveTask(title: string, content: string) {
+    setIsVisibleDialogEditTask({ ...isVisibleDialogEditTask, isVisible: false });
+    if (isVisibleDialogEditTask.isNew) {
+      saveNewTask(title, content);
+    }
+    else {
+      saveEditedTask(title, content);
+    }
+  }
+
+  function saveEditedTask(title: string, content: string) {
+    const newTasks = tasks.map(item => {
+      if (item.id === selectedTask?.id) {
+        return { ...selectedTask, title: title, content: content };
+      } else {
+        return item;
+      }
+    });
+    setTasks(newTasks);
+  }
+
+  function saveNewTask(title: string, content: string) {
+
     const newTask: TaskData = {
       id: getRandomId(),
       title: title,
@@ -96,6 +123,17 @@ function App() {
     setTasks(newTastks as TaskData[]);
   }
 
+  function handleColumnTitleChange(value: string) {
+    const newCol: ColumnData = { ...selectedColumn as ColumnData, title: value };
+    const newColumns = columns.map(col => {
+      if (col.id === selectedColumn?.id) {
+        return newCol
+      } else return col;
+    });
+    console.log(newColumns);
+    setColumns(newColumns);
+  }
+
   return (
     <>
       <Header />
@@ -105,15 +143,23 @@ function App() {
             columns.map(columnItem => {
               return (
                 <Column key={columnItem.id}>
-                  <ColumnTitle >{columnItem.title}</ColumnTitle>
+                  <ColumnTitle
+                    text={columnItem.title}
+                    onChange={handleColumnTitleChange}
+                    onClick={() => setSelectedColumn(columnItem)}
+                  />
                   {
                     tasks.filter(taskIt => taskIt.idColumn == columnItem.id).map(taskItem => {
                       return (
-                        <Droppable id={taskItem.id} isDraggable={true} onClick={() => handleClickTask(taskItem)} onDrop={() => handleDrop(taskItem)}>
-                          <Task key={taskItem.id}>
-                            <TaskTitle>{taskItem.title}</TaskTitle>
-                            <TaskContent >{taskItem.content}</TaskContent>
-                          </Task>
+                        <Droppable
+                          id={taskItem.id}
+                          isDraggable={true}
+                          onClick={() => handleClickCard(columnItem)}
+                          onMouseDown={() => handleMouseDownCard(taskItem)} onDrop={() => handleDrop(taskItem)}>
+                          <Card key={taskItem.id}>
+                            <CardTitle>{taskItem.title}</CardTitle>
+                            <CardContent >{taskItem.content}</CardContent>
+                          </Card>
                         </Droppable>
                       )
                     })
@@ -123,7 +169,7 @@ function App() {
                     isDraggable={false}
                     onDrop={() => handleDropButton(columnItem)}
                     onClick={() => handleClickAddTask(columnItem)}>
-                    <button onClick={() => setIsVisibleDialogEditTask(true)} className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add task</button>
+                    <button onClick={() => setIsVisibleDialogEditTask({ isVisible: true, isNew: true })} className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add task</button>
                   </Droppable>
                 </Column>
               )
@@ -132,12 +178,12 @@ function App() {
           <button className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add column</button>
         </Board>
         <FormEditTask
-          isNew={true}
-          selectedColumn={selectedColumn}
-          selectedTask={selectedTask}
-          isVisible={isVisibleDialogEditTask}
-          onCancel={() => setIsVisibleDialogEditTask(false)}
-          onSave={handleSaveNewTask}
+          isNew={isVisibleDialogEditTask.isNew}
+          selectedColumn={selectedColumn as ColumnData}
+          selectedTask={selectedTask as TaskData}
+          isVisible={isVisibleDialogEditTask.isVisible}
+          onCancel={() => setIsVisibleDialogEditTask({ ...isVisibleDialogEditTask, isVisible: false })}
+          onSave={handleSaveTask}
         />
       </main >
 
