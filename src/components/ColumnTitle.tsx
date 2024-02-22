@@ -1,9 +1,11 @@
 import { KeyboardEvent, useRef, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 
 interface ColumnTitleProps {
   text: string;
   onChange: (value: string) => void;
   onClick?: () => void;
+  onDelete: () => void;
 }
 
 export default function ColumnTitle(props: ColumnTitleProps) {
@@ -26,28 +28,42 @@ export default function ColumnTitle(props: ColumnTitleProps) {
   }
 
   function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") {
-      setLastTitle(title);
-      setIsEditing(false);
-      props.onChange(title);
+    switch (event.key) {
+      case "Enter":
+        setLastTitle(title);
+        setIsEditing(false);
+        props.onChange(title);
+        break;
+      case "Escape":
+        handleLostFocus();
+        break;
     }
+
   }
 
   return (
-    <div
-      onClick={handleClick}
-      className={`rounded-lg bg-component w-full ${isEditing ? "p-0" : "hover-darken-button p-component"}`}>
-      <label hidden={isEditing} className="font-bold cursor-pointer">{title}</label>
-      <input
-        ref={inputRef}
-        type="text"
-        hidden={!isEditing}
-        value={title}
-        className="p-2.5 mx-0 rounded-md font-bold w-full"
-        onKeyUp={handleKeyUp}
-        onBlur={handleLostFocus}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+    <div className="flex gap-4">
+      <div
+        onClick={handleClick}
+        className={`rounded-lg w-full ${isEditing ? "p-0 cursor-default" : "hover:bg-stone-200 p-component cursor-pointer"}`}>
+        <label hidden={isEditing} className="font-bold cursor-pointer">{title}</label>
+        <input
+          ref={inputRef}
+          type="text"
+          hidden={!isEditing}
+          value={title}
+          className="p-2.5 mx-0 rounded-md font-bold w-full"
+          onKeyUp={handleKeyUp}
+          onBlur={handleLostFocus}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+      <button
+        className="px-3 rounded-md text-stone-400 hover:bg-stone-200"
+        onClick={props.onDelete}
+      >
+        <IoMdClose size={20} className="" />
+      </button>
     </div>
   )
 }

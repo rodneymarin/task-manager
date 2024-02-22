@@ -5,7 +5,7 @@ import { ColumnData, TaskData } from "../globals";
 interface PropsFormEditTask {
   selectedColumn: ColumnData;
   selectedTask: TaskData;
-  isVisible: boolean;
+  //isVisible: boolean;
   isNew: boolean;
   onCancel: () => void;
   onSave: (title: string, content: string) => void;
@@ -33,12 +33,6 @@ export default function FormEditTask(props: PropsFormEditTask) {
     setError(err);
   }, [taskTitle, taskContent]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      inputTitleRef.current?.focus();
-    }, 100);
-  }, [props.isVisible])
-
   function handleTitleChange(event: ChangeEvent<HTMLTextAreaElement>) {
     setTaskTitle(event.target.value);
   }
@@ -53,12 +47,12 @@ export default function FormEditTask(props: PropsFormEditTask) {
   }
 
   return (
-    <Modal isVisible={props.isVisible}>
+    <Modal /*isVisible={props.isVisible}*/>
       <form className="w-[30rem] min-h-72 p-8 rounded-xl shadow-xl bg-stone-100 flex flex-col gap-8 text-stone-500"
         onSubmit={handleSubmit}
       >
         <div>
-          <h4 className="font-bold text-xl text-black">{`${props.isNew ? "Add new " : "Edit "}task`}</h4>
+          <h4 className="font-bold text-xl text-black">{`${props.isNew ? "Add New " : "Edit "}Task`}</h4>
           <p className="text-stone-400">Inside column <i>{props.selectedColumn?.title}</i></p>
         </div>
         <div className="flex flex-col gap-1">
@@ -81,11 +75,11 @@ export default function FormEditTask(props: PropsFormEditTask) {
           <button
             type="submit"
             disabled={error}
-            className="rounded-md bg-purple-600 text-white h-fit w-fit min-w-32 p-2 cursor-pointer hover:bg-purple-700 disabled:bg-stone-200 disabled:cursor-default">
+            className="button button-confirm">
             Save</button>
           <button
             onClick={props.onCancel}
-            className="rounded-md bg-stone-400 text-white h-fit w-fit min-w-32 p-2 cursor-pointer hover:bg-stone-500">
+            className="button">
             Cancel</button>
         </div>
       </form>

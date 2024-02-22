@@ -9,3 +9,10 @@ export interface ColumnData {
   id: string;
   title: string;
 }
+
+export interface DialogParams {
+  id: string;
+  title: string;
+  message: string;
+  isOpen: boolean;
+}

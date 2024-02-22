@@ -9,10 +9,10 @@ import { FaPlus } from "react-icons/fa6"
 import { useState } from "react"
 import Droppable from "./components/Droppable"
 import FormEditTask from "./components/FormEditTask"
-import { ColumnData, TaskData } from "./globals"
+import { ColumnData, DialogParams, TaskData } from "./globals"
 import { getRandomId } from "./lib/getRandomId"
-import { IoIosCloseCircleOutline } from "react-icons/io"
-import { CgCloseO } from "react-icons/cg"
+import ConfirmationDialog from "./components/ConfirmationDialog"
+import FormNewColumn from "./components/FormNewColumn"
 
 
 const DEFAULT_COLUMNS: ColumnData[] = [
@@ -38,7 +38,9 @@ function App() {
   const [tasks, setTasks] = useState<TaskData[]>(DEFAULT_TASKS);
   const [selectedTask, setSelectedTask] = useState<TaskData | null>(null);
   const [selectedColumn, setSelectedColumn] = useState<ColumnData | null>(null);
-  const [isVisibleDialogEditTask, setIsVisibleDialogEditTask] = useState<{ isVisible: boolean, isNew: boolean }>({ isVisible: false, isNew: false });
+  const [formEditTask, setFormEditTask] = useState<{ isVisible: boolean, isNew: boolean }>({ isVisible: false, isNew: false });
+  const [formNewColum, setFormNewColumn] = useState<boolean>(false);
+  const [dialogParams, setDialogParams] = useState<DialogParams | null>(null);
 
   function handleMouseDownCard(task: TaskData) {
     setSelectedTask(task);
@@ -46,7 +48,7 @@ function App() {
 
   function handleClickCard(column: ColumnData) {
     setSelectedColumn(column);
-    setIsVisibleDialogEditTask({ isVisible: true, isNew: false });
+    setFormEditTask({ isVisible: true, isNew: false });
   }
 
   function handleClickAddTask(column: ColumnData) {
@@ -87,8 +89,8 @@ function App() {
   }
 
   function handleSaveTask(title: string, content: string) {
-    setIsVisibleDialogEditTask({ ...isVisibleDialogEditTask, isVisible: false });
-    if (isVisibleDialogEditTask.isNew) {
+    setFormEditTask({ ...formEditTask, isVisible: false });
+    if (formEditTask.isNew) {
       saveNewTask(title, content);
     }
     else {
@@ -123,6 +125,11 @@ function App() {
     setTasks(newTastks as TaskData[]);
   }
 
+  function deleteTask(task: TaskData) {
+    const newTasks = tasks.filter(item => (item.id !== task.id));
+    setTasks(newTasks);
+  }
+
   function handleColumnTitleChange(value: string) {
     const newCol: ColumnData = { ...selectedColumn as ColumnData, title: value };
     const newColumns = columns.map(col => {
@@ -134,6 +141,66 @@ function App() {
     setColumns(newColumns);
   }
 
+  function handleClickDeleteColumn(column: ColumnData) {
+    setSelectedColumn(column);
+    setDialogParams({
+      id: "column",
+      title: "Delete Column",
+      message: "Are you sure you want to delete the column " + column.title + " and all its tasks?",
+      isOpen: true
+    });
+  }
+
+  function deleteColumn(col: ColumnData) {
+    const newTasks = tasks.filter(item => (item.idColumn !== col.id));
+    const newColumns = columns.filter(item => (item.id !== col.id));
+    setColumns(newColumns);
+    setTasks(newTasks);
+  }
+
+  function handleDialogResponse(value: boolean) {
+    if (value) {
+      switch (dialogParams?.id) {
+        case "column":
+          deleteColumn(selectedColumn as ColumnData);
+          break;
+        case "task":
+          deleteTask(selectedTask as TaskData);
+      }
+    }
+    setDialogParams(null);
+  }
+
+  function handleClickDeleteCard(task: TaskData) {
+    setSelectedTask(task);
+    setDialogParams({
+      id: "task",
+      title: "Delete Task",
+      message: "Are you sure you want to delete the task " + task.title + "?",
+      isOpen: true
+    });
+  }
+
+  function handleClickAddColumn() {
+    setFormNewColumn(true);
+  }
+
+  function addNewColumn(title: string) {
+    const newCol: ColumnData = {
+      id: getRandomId(),
+      title: title
+    };
+    const newColumns = [...columns, newCol];
+    setColumns(newColumns);
+  }
+
+  function handleResponseFormNewColumn(res: boolean, value: string) {
+    if (res) {
+      addNewColumn(value);
+    }
+    setFormNewColumn(false);
+  }
+
   return (
     <>
       <Header />
@@ -143,10 +210,12 @@ function App() {
             columns.map(columnItem => {
               return (
                 <Column key={columnItem.id}>
+
                   <ColumnTitle
                     text={columnItem.title}
                     onChange={handleColumnTitleChange}
                     onClick={() => setSelectedColumn(columnItem)}
+                    onDelete={() => handleClickDeleteColumn(columnItem)}
                   />
                   {
                     tasks.filter(taskIt => taskIt.idColumn == columnItem.id).map(taskItem => {
@@ -154,11 +223,15 @@ function App() {
                         <Droppable
                           id={taskItem.id}
                           isDraggable={true}
-                          onClick={() => handleClickCard(columnItem)}
+                          //onClick={() => handleClickCard(columnItem)}
                           onMouseDown={() => handleMouseDownCard(taskItem)} onDrop={() => handleDrop(taskItem)}>
-                          <Card key={taskItem.id}>
-                            <CardTitle>{taskItem.title}</CardTitle>
-                            <CardContent >{taskItem.content}</CardContent>
+                          <Card key={taskItem.id} onClick={() => handleClickCard(columnItem)}>
+                            <div className="divide-y">
+                              <CardTitle onClick={() => handleClickDeleteCard(taskItem)}>
+                                {taskItem.title}
+                              </CardTitle>
+                              <CardContent >{taskItem.content}</CardContent>
+                            </div>
                           </Card>
                         </Droppable>
                       )
@@ -169,24 +242,44 @@ function App() {
                     isDraggable={false}
                     onDrop={() => handleDropButton(columnItem)}
                     onClick={() => handleClickAddTask(columnItem)}>
-                    <button onClick={() => setIsVisibleDialogEditTask({ isVisible: true, isNew: true })} className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add task</button>
+                    <button
+                      onClick={() => setFormEditTask({ isVisible: true, isNew: true })}
+                      className="flex h-fit items-center gap-2 rounded-lg w-full p-2 bg-component cursor-pointer text-stone-400 hover:bg-stone-200">
+                      <FaPlus />Add task
+                    </button>
                   </Droppable>
                 </Column>
               )
             })
           }
-          <button className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add column</button>
+          <button
+            onClick={handleClickAddColumn}
+            className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add column</button>
         </Board>
+      </main >
+      {
+        formEditTask.isVisible &&
         <FormEditTask
-          isNew={isVisibleDialogEditTask.isNew}
+          isNew={formEditTask.isNew}
           selectedColumn={selectedColumn as ColumnData}
           selectedTask={selectedTask as TaskData}
-          isVisible={isVisibleDialogEditTask.isVisible}
-          onCancel={() => setIsVisibleDialogEditTask({ ...isVisibleDialogEditTask, isVisible: false })}
+          onCancel={() => setFormEditTask({ ...formEditTask, isVisible: false })}
           onSave={handleSaveTask}
         />
-      </main >
-
+      }
+      {
+        dialogParams?.isOpen &&
+        <ConfirmationDialog
+          title={dialogParams.title}
+          message={dialogParams.message}
+          onResponse={handleDialogResponse} />
+      }
+      {
+        formNewColum &&
+        <FormNewColumn
+          onResponse={handleResponseFormNewColumn}
+        />
+      }
     </>
   )
 }
