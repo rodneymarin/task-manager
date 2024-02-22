@@ -59,7 +59,7 @@ export default function ColumnTitle(props: ColumnTitleProps) {
         />
       </div>
       <button
-        className="px-3 rounded-md text-stone-400 hover:bg-stone-200"
+        className="px-1 h-8 rounded-md text-stone-400 hover:bg-stone-200"
         onClick={props.onDelete}
       >
         <IoMdClose size={20} className="" />

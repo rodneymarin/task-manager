@@ -22,7 +22,7 @@ export default function CardTitle(props: PropsWithChildren<CardTitleProps>) {
         }
       </h4>
       <button
-        className="px-2 rounded-md text-stone-400 hover:bg-stone-200 translate-x-3 -translate-y-3 pointer-events-auto"
+        className="px-1 h-8 rounded-md text-stone-400 hover:bg-stone-200 translate-x-3 -translate-y-3 pointer-events-auto"
         onClick={handleClick}
       >
         <IoMdClose size={20} className="" />

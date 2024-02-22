@@ -16,21 +16,20 @@ import FormNewColumn from "./components/FormNewColumn"
 
 
 const DEFAULT_COLUMNS: ColumnData[] = [
-  { id: "asda090s9d", title: "Idea" },
-  { id: "9s8df7s9d8f7", title: "Design" },
-  { id: "f8d9s8798398", title: "Client review" }
+  { id: "asda090s9d", title: "Pending" },
+  { id: "9s8df7s9d8f7", title: "In progress" },
+  { id: "f8d9s8798398", title: "Done" }
 ]
 
 const DEFAULT_TASKS: TaskData[] = [
-  { id: "asd090a9sd980", idColumn: "asda090s9d", title: "Prueba título 1", content: "Dolore est veniam enim pariatur qui duis pariatur aliquip cupidatat ut ipsum culpa cupidatat cillum. Laborum cupidatat proident aute pariatur consequat fugiat nisi ad qui duis ullamco. Est sit amet proident nisi sunt occaecat. Ipsum exercitation incididunt consectetur minim non aute incididunt labore pariatur elit. Nulla qui dolore proident eu duis sint duis magna ullamco consequat tempor. Magna elit exercitation excepteur commodo anim id excepteur nisi anim sit et. Eiusmod veniam esse veniam est anim sunt sunt minim cillum excepteur." },
-  { id: "da0s9da09sd", idColumn: "asda090s9d", title: "Segundo item", content: "" },
-  { id: "dada87d54s65", idColumn: "asda090s9d", title: "Hola mundo", content: "Consequat quis eu dolor ea officia laboris eu aliquip elit quis enim quis esse quis. Aute incididunt tempor elit ipsum aute sint duis fugiat. Pariatur proident ipsum incididunt dolore dolor deserunt veniam ullamco deserunt.." },
-  { id: "asd68a7s6d8768", idColumn: "9s8df7s9d8f7", title: "Prueba título 2", content: "Dolore est veniam enim pariatur qui duis pariatur aliquip cupidatat ut ipsum culpa cupidatat cillum. Laborum cupidatat proident aute pariatur consequat fugiat nisi ad qui duis ullamco. Est sit amet proident nisi sunt occaecat. Ipsum exercitation incididunt consectetur minim non aute incididunt labore pariatur elit. Nulla qui dolore proident eu duis sint duis magna ullamco consequat tempor. Magna elit exercitation excepteur commodo anim id excepteur nisi anim sit et. Eiusmod veniam esse veniam est anim sunt sunt minim cillum excepteur." },
-  { id: "sa8d7g78sd7a6s6", idColumn: "9s8df7s9d8f7", title: "22 Segundo item", content: "Exercitation ullamco id minim excepteur eu dolor sunt incididunt pariatur Lorem ipsum sint. Sunt ea cupidatat pariatur id duis id Lorem adipisicing consequat. Consectetur exercitation eiusmod pariatur est esse sunt duis commodo ut dolor irure magna. Quis laborum sit pariatur sint cupidatat aliquip. Exercitation occaecat eiusmod cupidatat commodo mollit dolor in est eu sint ipsum ex anim. Qui Lorem et ex duis ut esse in ullamco occaecat consequat qui anim." },
-  { id: "24j4555iiiu3i", idColumn: "9s8df7s9d8f7", title: "Hola 2 mundo 2", content: "Consequat quis eu dolor ea officia laboris eu aliquip elit quis enim quis esse quis. Aute incididunt tempor elit ipsum aute sint duis fugiat. Pariatur proident ipsum incididunt dolore dolor deserunt veniam ullamco deserunt.." },
-  { id: "sd4333eew80", idColumn: "f8d9s8798398", title: "Prueba título 3", content: "Dolore est veniam enim pariatur qui duis pariatur aliquip cupidatat." },
-  { id: "dfs4wer4wer", idColumn: "f8d9s8798398", title: "333 Segundo item", content: "Quis Lorem amet ea culpa excepteur. Laboris nulla commodo ex nostrud labore esse eu. Dolore cupidatat esse ut magna est. Sit ea non tempor anim irure dolor incididunt duis sit incididunt id. Laboris voluptate sit dolore sint est incididunt labore." },
-  { id: "899d993939sai", idColumn: "f8d9s8798398", title: "Hola 33 mundo 33", content: "Pariatur proident ipsum incididunt dolore dolor deserunt veniam ullamco deserunt." }
+  { id: "asd090a9sd980", idColumn: "asda090s9d", title: "Improve presentation", content: "Dolore est veniam enim pariatur qui duis." },
+  { id: "da0s9da09sd", idColumn: "asda090s9d", title: "Revie all emails", content: "" },
+  { id: "dada87d54s65", idColumn: "asda090s9d", title: "Call pending customer", content: "Consequat quis eu dolor ea officia laboris eu aliquip elit quis enim quis esse quis. Aute incididunt tempor elit ipsum aute sint duis fugiat. Pariatur proident ipsum incididunt dolore dolor deserunt veniam ullamco deserunt.." },
+  { id: "asd68a7s6d8768", idColumn: "9s8df7s9d8f7", title: "Clean email inbox", content: "Dolore est veniam enim pariatur qui duis pariatur aliquip cupidatat ut ipsum culpa cupidatat cillum. Laborum cupidatat proident aute pariatur consequat fugiat nisi ad qui duis ullamco. Est sit amet proident nisi sunt occaecat. Ipsum exercitation incididunt consectetur minim non aute incididunt labore pariatur elit. Nulla qui dolore proident eu duis sint duis magna ullamco consequat tempor. Magna elit exercitation excepteur commodo anim id excepteur nisi anim sit et. Eiusmod veniam esse veniam est anim sunt sunt minim cillum excepteur." },
+  { id: "sa8d7g78sd7a6s6", idColumn: "9s8df7s9d8f7", title: "Design new product", content: "Exercitation ullamco id minim excepteur eu dolor sunt incididunt pariatur Lorem ipsum sint. Sunt ea cupidatat pariatur id duis id Lorem adipisicing consequat. Consectetur exercitation eiusmod pariatur est esse sunt duis commodo ut dolor irure magna. Quis laborum sit pariatur sint cupidatat aliquip. Exercitation occaecat eiusmod cupidatat commodo mollit dolor in est eu sint ipsum ex anim. Qui Lorem et ex duis ut esse in ullamco occaecat consequat qui anim." },
+  { id: "24j4555iiiu3i", idColumn: "9s8df7s9d8f7", title: "Move the new office", content: "Consequat quis eu dolor ea officia laboris eu aliquip elit quis enim quis esse quis. Aute incididunt tempor elit ipsum aute sint duis fugiat. Pariatur proident ipsum incididunt dolore dolor deserunt veniam ullamco deserunt.." },
+  { id: "sd4333eew80", idColumn: "f8d9s8798398", title: "Sell 30 products in september & october", content: "Dolore est veniam enim pariatur qui duis pariatur aliquip cupidatat." },
+  { id: "dfs4wer4wer", idColumn: "f8d9s8798398", title: "Meeting with George", content: "incididunt labore." }
 ]
 
 function App() {
