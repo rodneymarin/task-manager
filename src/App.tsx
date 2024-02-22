@@ -253,7 +253,7 @@ function App() {
           }
           <button
             onClick={handleClickAddColumn}
-            className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component cursor-pointer hover:bg-stone-300"><FaPlus />Add column</button>
+            className="flex h-fit items-center gap-2 rounded-lg w-[20rem] p-2 bg-component cursor-pointer text-stone-400 hover:bg-stone-200"><FaPlus />Add column</button>
         </Board>
       </main >
       {
